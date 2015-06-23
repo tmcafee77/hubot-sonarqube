@@ -1,9 +1,31 @@
+# Description:
+#   A hubot script that displays stats from SonarQube.
+#
+# Dependencies:
+#   N/A
+#
+# Configuration:
+#   knife configured in your $PATH, you'll see a WARNING in console if you don't have it
+#
+# Commands:
+#   hubot sonar set server <server> - Set address of SonarQube server
+#   hubot sonar coverage <project name> - chef: Runs chef-client across an environment
+#   hubot sonar issues <project name> -  chef: Lists all environments on chef server
+#
+# Author:
+#   Peter Strapp <peter@strapp.co.uk>
+#
+
 module.exports = (robot) ->
   @server = ''
 
-  robot.respond /sonar test coverage (.*)/, (msg) ->
+  robot.respond /sonar coverage (.*)/, (msg) ->
     findResource robot, msg, msg.match[1], (resourceName, robot, msg) ->
       coverage(resourceName, robot, msg)
+
+  robot.respond /sonar issues (.*)/, (msg) ->
+    findResource robot, msg, msg.match[1], (resourceName, robot, msg) ->
+      violations(resourceName, robot, msg)
 
   robot.respond /sonar set server (.*)/, (msg) ->
     server = msg.match[1]
@@ -16,13 +38,22 @@ coverage = (resourceName, robot, msg) ->
     resource = JSON.parse(body)[0]
     name = resource.name
     val = resource.msr[0].val
-    msg.send "Unit test coverage for \"#{name}\" is #{val}%"
+    msg.send "Unit test coverage for \"#{name}\" is #{val}%."
+
+violations = (resourceName, robot, msg) ->
+  robot.http("http://#{server}/api/resources?resource=#{resourceName}&metrics=violations").get() (err, res, body) ->
+    handleError(err, res.statusCode, msg)
+
+    resource = JSON.parse(body)[0]
+    name = resource.name
+    val = resource.msr[0].val
+    msg.send "The project \"#{name}\" has #{val}% issues."
 
 findResource = (robot, msg, searchTerm, callback) ->
   robot.http("http://#{server}/api/resources").get() (err, res, body) ->
     handleError(err, res.statusCode, msg)
     resourceName = resource.key for resource in JSON.parse(body) when resource.key.toLowerCase().indexOf(searchTerm.toLowerCase()) isnt -1
-    if resourceName? callback(resourceName, robot, msg) 
+    if resourceName? callback(resourceName, robot, msg)
     else msg.send "Resource \"#{searchTerm}\" not found"
 
 handleError = (err, statusCode, msg) ->

@@ -1,7 +1,7 @@
 {
   "name": "hubot-sonarqube",
-  "description": "A hubot script that does the things",
-  "version": "0.0.0",
+  "description": "A hubot script that displays stats from SonarQube.",
+  "version": "0.0.2",
   "author": "Peter Strapp <peter@strapp.co.uk>",
   "license": "MIT",
 
@@ -9,11 +9,11 @@
 
   "repository": {
     "type": "git",
-    "url": "git://github.com/hubot-scripts/hubot-sonarqube.git"
+    "url": "git://github.com/peterstrapp/hubot-sonarqube.git"
   },
 
   "bugs": {
-    "url": "https://github.com/hubot-scripts/hubot-sonarqube/issues"
+    "url": "https://github.com/peterstrapp/hubot-sonarqube/issues"
   },
 
   "dependencies": {

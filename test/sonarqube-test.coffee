@@ -14,4 +14,5 @@ describe 'sonarqube', ->
 
   it 'registers respond listeners', ->
     expect(@robot.respond).to.have.been.calledWith(/sonar set server (.*)/)
-    expect(@robot.respond).to.have.been.calledWith(/sonar test coverage (.*)/)
+    expect(@robot.respond).to.have.been.calledWith(/sonar coverage (.*)/)
+    expect(@robot.respond).to.have.been.calledWith(/sonar issues (.*)/)

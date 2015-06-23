@@ -1,6 +1,8 @@
+[![Build Status](https://travis-ci.org/peterstrapp/hubot-sonarqube.svg?branch=master)](https://travis-ci.org/peterstrapp/hubot-sonarqube)
+
 # hubot-sonarqube
 
-Allows users to request that hubot displays stats for SonarQube.
+A hubot script that displays stats from SonarQube.
 
 See [`src/sonarqube.coffee`](src/sonarqube.coffee) for full documentation.
 
