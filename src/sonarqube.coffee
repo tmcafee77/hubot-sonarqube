@@ -55,8 +55,11 @@ findResource = (robot, msg, searchTerm, callback) ->
   robot.http("http://#{server}/api/resources").get() (err, res, body) ->
     handleError(err, res.statusCode, msg)
     resourceName = resource.key for resource in JSON.parse(body) when resource.key.toLowerCase().indexOf(searchTerm.toLowerCase()) isnt -1
-    if resourceName? callback(resourceName, robot, msg)
-    else msg.send "Resource \"#{searchTerm}\" not found"
+
+    if typeof resourceName isnt 'undefined'
+      callback(resourceName, robot, msg)
+    else
+      msg.send "Resource \"#{searchTerm}\" not found"
 
 handleError = (err, statusCode, msg) ->
   if err
