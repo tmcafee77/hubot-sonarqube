@@ -30,7 +30,7 @@ module.exports = (robot) ->
       violations(resourceName, robot, msg)
 
   robot.respond /sonar set server (.*)/, (msg) ->
-    server = msg.match[1]
+    server = msg.match[1].replace(/http:\/\//i, '')
     msg.send "Sonar server set to: #{server}"
 
 coverage = (resourceName, robot, msg) ->
