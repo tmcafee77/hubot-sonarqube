@@ -14,11 +14,13 @@
 #
 # Author:
 #   Peter Strapp <peter@strapp.co.uk>
+#   Brian Antonelli <brian.antonelli@autotrader.com>
 #
 
-module.exports = (robot) ->
-  @server = ''
 
+server = ''
+
+module.exports = (robot) ->
   robot.respond /sonar coverage (.*)/, (msg) ->
     findResource robot, msg, msg.match[1], (resourceName, robot, msg) ->
       coverage(resourceName, robot, msg)
