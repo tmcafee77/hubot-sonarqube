@@ -14,11 +14,13 @@
 #
 # Author:
 #   Peter Strapp <peter@strapp.co.uk>
+#   Brian Antonelli <brian.antonelli@autotrader.com>
 #
 
-module.exports = (robot) ->
-  @server = ''
 
+server = ''
+
+module.exports = (robot) ->
   robot.respond /sonar coverage (.*)/, (msg) ->
     findResource robot, msg, msg.match[1], (resourceName, robot, msg) ->
       coverage(resourceName, robot, msg)
@@ -28,7 +30,7 @@ module.exports = (robot) ->
       violations(resourceName, robot, msg)
 
   robot.respond /sonar set server (.*)/, (msg) ->
-    server = msg.match[1]
+    server = msg.match[1].replace(/http:\/\//i, '')
     msg.send "Sonar server set to: #{server}"
 
 coverage = (resourceName, robot, msg) ->
@@ -53,8 +55,11 @@ findResource = (robot, msg, searchTerm, callback) ->
   robot.http("http://#{server}/api/resources").get() (err, res, body) ->
     handleError(err, res.statusCode, msg)
     resourceName = resource.key for resource in JSON.parse(body) when resource.key.toLowerCase().indexOf(searchTerm.toLowerCase()) isnt -1
-    if resourceName? callback(resourceName, robot, msg)
-    else msg.send "Resource \"#{searchTerm}\" not found"
+
+    if typeof resourceName isnt 'undefined'
+      callback(resourceName, robot, msg)
+    else
+      msg.send "Resource \"#{searchTerm}\" not found"
 
 handleError = (err, statusCode, msg) ->
   if err
