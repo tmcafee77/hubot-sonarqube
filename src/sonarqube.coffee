@@ -17,24 +17,23 @@
 #   Brian Antonelli <brian.antonelli@autotrader.com>
 #
 
-
-server = process.env.HUBOT_JENKINS_URL
-auth = 'Basic ' + new Buffer(process.env.HUBOT_JENKINS_AUTH).toString('base64')
+server = ''
 
 module.exports = (robot) ->
   robot.respond /sonar coverage (.*)/, (msg) ->
     findResource robot, msg, msg.match[1], (resourceName, robot, msg) ->
-      coverage(resourceName, robot, msg)
+     coverage(resourceName, robot, msg)
 
   robot.respond /sonar issues (.*)/, (msg) ->
     findResource robot, msg, msg.match[1], (resourceName, robot, msg) ->
       violations(resourceName, robot, msg)
 
   robot.respond /sonar set server (.*)/, (msg) ->
-    #server = msg.match[1].replace(/http:\/\//i, '')
+    server = msg.match[1].replace(/http:\/\//i, '')
     msg.send "Sonar server set to: #{server}"
 
 coverage = (resourceName, robot, msg) ->
+  auth = 'Basic ' + new Buffer(process.env.HUBOT_JENKINS_AUTH).toString('base64')
   robot.http("#{server}/api/resources?resource=#{resourceName}&metrics=coverage")
     .headers(Authorization: auth)
     .get() (err, res, body) ->
@@ -46,6 +45,7 @@ coverage = (resourceName, robot, msg) ->
     msg.send "Unit test coverage for \"#{name}\" is #{val}%."
 
 violations = (resourceName, robot, msg) ->
+  auth = 'Basic ' + new Buffer(process.env.HUBOT_JENKINS_AUTH).toString('base64')
   robot.http("#{server}/api/resources?resource=#{resourceName}&metrics=violations")
     .headers(Authorization: auth)
     .get() (err, res, body) ->
@@ -57,6 +57,7 @@ violations = (resourceName, robot, msg) ->
     msg.send "The project \"#{name}\" has #{val}% issues."
 
 findResource = (robot, msg, searchTerm, callback) ->
+  auth = 'Basic ' + new Buffer(process.env.HUBOT_JENKINS_AUTH).toString('base64')
   robot.http("#{server}/api/resources")
     .headers(Authorization: auth)
     .get() (err, res, body) ->
