@@ -18,7 +18,8 @@
 #
 
 
-server = ''
+server = process.env.HUBOT_JENKINS_URL
+auth = 'Basic ' + new Buffer(process.env.HUBOT_JENKINS_AUTH).toString('base64')
 
 module.exports = (robot) ->
   robot.respond /sonar coverage (.*)/, (msg) ->
@@ -30,11 +31,13 @@ module.exports = (robot) ->
       violations(resourceName, robot, msg)
 
   robot.respond /sonar set server (.*)/, (msg) ->
-    server = msg.match[1].replace(/http:\/\//i, '')
+    #server = msg.match[1].replace(/http:\/\//i, '')
     msg.send "Sonar server set to: #{server}"
 
 coverage = (resourceName, robot, msg) ->
-  robot.http("http://#{server}/api/resources?resource=#{resourceName}&metrics=coverage").get() (err, res, body) ->
+  robot.http("#{server}/api/resources?resource=#{resourceName}&metrics=coverage")
+    .headers(Authorization: auth)
+    .get() (err, res, body) ->
     handleError(err, res.statusCode, msg)
 
     resource = JSON.parse(body)[0]
@@ -43,7 +46,9 @@ coverage = (resourceName, robot, msg) ->
     msg.send "Unit test coverage for \"#{name}\" is #{val}%."
 
 violations = (resourceName, robot, msg) ->
-  robot.http("http://#{server}/api/resources?resource=#{resourceName}&metrics=violations").get() (err, res, body) ->
+  robot.http("#{server}/api/resources?resource=#{resourceName}&metrics=violations")
+    .headers(Authorization: auth)
+    .get() (err, res, body) ->
     handleError(err, res.statusCode, msg)
 
     resource = JSON.parse(body)[0]
@@ -52,7 +57,9 @@ violations = (resourceName, robot, msg) ->
     msg.send "The project \"#{name}\" has #{val}% issues."
 
 findResource = (robot, msg, searchTerm, callback) ->
-  robot.http("http://#{server}/api/resources").get() (err, res, body) ->
+  robot.http("#{server}/api/resources")
+    .headers(Authorization: auth)
+    .get() (err, res, body) ->
     handleError(err, res.statusCode, msg)
     resourceName = resource.key for resource in JSON.parse(body) when resource.key.toLowerCase().indexOf(searchTerm.toLowerCase()) isnt -1
 

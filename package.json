@@ -1,7 +1,7 @@
 {
   "name": "hubot-sonarqube",
   "description": "A hubot script that displays stats from SonarQube.",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "author": "Peter Strapp <peter@strapp.co.uk>",
   "license": "MIT",
 
